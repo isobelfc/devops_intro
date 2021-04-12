@@ -58,7 +58,7 @@
 - Infrastructure as a Product
 
 ### Risk register
-- Chance of occurence of events, the potential damage and the risk
+- Chance of occurrence of events, the potential damage and the risk
 
 ### Tasks of DevOps engineer
 - Soft skills
@@ -68,3 +68,49 @@
 - Knowledge of coding
 - Understanding the automation tools
 - Knowledge of testing
+
+## Vagrant Commands
+- `vagrant up` to spin up a virtual machine
+- `vagrant destroy` to destroy
+- `vagrant reload` to reload
+- `vagrant status` to check how many machines are running and if they are all running
+- `vagrant ssh` to ssh into virtual machine (VM)
+- `vagrant halt` to pause
+
+- apt-get in Linux is a package manager to install/update like windows installer
+- `apt-get`
+
+### Vagrantfile
+- We need a file called Vagrantfile, which contains the necessary info to run the VM
+```
+Vagrant.configure("2") do |config|
+
+config.vm.box = "ubuntu/xenial64"
+
+end
+```
+
+### Linux Commands
+- name of machine `uname`
+- list directories `ls`
+- list all directories `ls -a`
+- make directory `mkdir`
+- create file `nano file_name`
+- rename file `mv file_name new_file_name`
+- `sudo` used to run commands as an admin
+- `sudo su` to go into admin mode
+- to go back a directory from current location `cd ..`
+- current location `pwd`
+- to update `sudo apt-get update -y`
+- to upgrade `sudo apt-get upgrade -y`
+- `clear` to clear screen/terminal
+- copy README file from current location to devops folder `cp README.md devops/README.md`
+- delete file `rm file_name`
+- move file `mv README.md devops/`
+- chmod permission 700 400 u x w r
+- check current permission `ll`
+- give executable permission `chmod +x file_name`
+- `top` to check current processes
+- `ps` check process `ps aux`
+- Let's install web server called NGINX `sudo apt-get install nginx`
+- check if the nginx has been installed `systemctl status nginx`
