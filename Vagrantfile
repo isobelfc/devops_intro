@@ -16,15 +16,16 @@ config.vm.define "app" do |app|
     app.hostsupdater.aliases = ["development.local"]
     # to transfer files/folder data from our OS to VM vagrant has an option of synced_folder
     app.vm.synced_folder ".", "/home/vagrant/app"
+    #
+    # app.vm.provision "shell", inline: 'sudo echo "export DB_HOST=mongodb://192.168.10.101:27017/posts" >> ~/.bashrc', run: "always"
     # provision to install packages automatically
-    app.vm.provision "shell", path: "environment/provision_app.sh"
+    app.vm.provision "shell", path: "environment/provision_app.sh", privileged: false
 end
 
 # set up a second virtual machine
 config.vm.define "db" do |db|
     db.vm.box = "ubuntu/xenial64"
     db.vm.network "private_network", ip: "192.168.10.101"
-    db.hostsupdater.aliases = ["development.local"]
     db.vm.provision "shell", path: "environment/provision_db.sh"
 end
 

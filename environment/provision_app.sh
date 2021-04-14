@@ -18,3 +18,9 @@ sudo apt-get install nodejs -y
 
 # install pm2 with npm
 sudo npm install pm2 -g
+
+# set database as variable
+sudo echo "export DB_HOST=mongodb://192.168.10.101:27017/posts" >> ~/.bashrc
+
+# populate posts database
+node app/app/seeds/seed.js

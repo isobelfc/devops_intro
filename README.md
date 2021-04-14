@@ -146,6 +146,8 @@ config.vm.define "app" do |app|
     app.hostsupdater.aliases = ["development.local"]
     # to transfer files/folder data from our OS to VM vagrant has an option of synced_folder
     app.vm.synced_folder ".", "/home/vagrant/app"
+    # set DB_HOST variable
+    app.vm.provision "shell", inline: 'sudo echo "export DB_HOST=mongodb://192.168.10.101:27017/posts" >> /etc/profile.d/myvars.sh', run: "always"
     # provision to install packages automatically
     app.vm.provision "shell", path: "environment/provision_app.sh"
 end
@@ -154,14 +156,13 @@ end
 config.vm.define "db" do |db|
     db.vm.box = "ubuntu/xenial64"
     db.vm.network "private_network", ip: "192.168.10.101"
-    db.hostsupdater.aliases = ["development.local"]
     db.vm.provision "shell", path: "environment/provision_db.sh"
 end
 ```
 
 - `vagrant up` now targets every machine by default
 - to ssh into a machine you need to specify the name of the machine, e.g. `vagrant ssh app`
-- provision the `app` machine
+- provision the `app` machine in `provision_app.sh` file
 
 ```
 provision.sh
@@ -184,9 +185,12 @@ sudo apt-get install nodejs -y
 
 # install pm2 with npm
 sudo npm install pm2 -g
+
+# populate posts database
+node app/app/seeds/seed.js
 ```
 
-- provision the db machine
+- provision the db machine in `provision_app.sh` file
 
 ```
 provision.sh
@@ -206,4 +210,38 @@ sudo apt-get update -y
 
 # install mongodb packages of version 3.2.20
 sudo apt-get install -y mongodb-org=3.2.20 mongodb-org-server=3.2.20 mongodb-org-shell=3.2.20 mongodb-org-mongos=3.2.20 mongodb-org-tools=3.2.20
+
+# install nodejs so we can use npm
+curl -sL https://deb.nodesource.com/setup_6.x | sudo -E bash -
+sudo apt-get install nodejs -y
+
+# install mongod
+sudo npm install mongod -g
+
+# set port
+sudo sed -i 's/127.0.0.1/0.0.0.0/g' /etc/mongod.conf
+
+# enable mongod on startup
+sudo systemctl enable mongod
+
+# run mongod
+sudo service mongod start
 ```
+
+## Linux variables and Env var
+- shell variables: only within the shell that they are defined in
+- environmental variables: available anywhere on OS
+- check existing env variables in our system `env` or `printenv KEY`
+- export is the keyword to create an env variable
+- as KEY=value, KEY2="some other value"
+- naming convention is keys in all caps
+- system default env variables `USER`, `HOME`, `SHELL`, `PATH`, `TERM`
+- env variables we create will be erased if we leave and re-enter the machine
+
+### Making persistent variables
+- we can write them in the `bashrc` file
+- `echo "export ENG_VAR=engineering84" >> ~/.bashrc`
+- this will be available from the next time we launch the terminal (exit and then ssh back in) until we destroy the machine
+- to access it immediately run `source ~/.bashrc`
+- to add a database as an env variable `echo "export DB_HOST="mongodb://192.168.10.200/27017/posts"" >> ~/.bashrc`
+- we can add this to provisions to have it available every time we run the VM
